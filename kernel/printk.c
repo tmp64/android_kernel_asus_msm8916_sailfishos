@@ -533,7 +533,7 @@ static void log_store(int facility, int level,
 		msg->flags = LOG_NEWLINE | LOG_PREFIX;
 		mlen = msg_print_text(msg, 0, true, llcon_buf, sizeof(llcon_buf));
 		if (mlen > 0)
-			llcon_emit_log_line(llcon_buf, mlen);
+			llcon_emit_log_line(llcon_buf, mlen, msg->level);
 		msg->flags = flags & 0x1f;
 	}
 #endif

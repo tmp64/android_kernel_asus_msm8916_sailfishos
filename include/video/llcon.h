@@ -78,7 +78,7 @@ extern volatile int llcon_dumplog;
 
 void llcon_clear(void);
 void llcon_emit(char c);
-void llcon_emit_line(char * line, int size);
+void llcon_emit_line(char * line, int size, int level);
 void llcon_set_cursor_pos(size_t x, size_t y);
 void llcon_set_font_fg_color(uint32_t color);
 void llcon_set_font_bg_color(uint32_t color);
@@ -97,10 +97,10 @@ static inline void llcon_emit_log_char(char c)
 	}
 }
 
-static inline void llcon_emit_log_line(char * line, int size)
+static inline void llcon_emit_log_line(char * line, int size, int level)
 {
 	if (llcon_enabled || llcon_dumplog) {
-		llcon_emit_line(line, size);
+		llcon_emit_line(line, size, level);
 	}
 }
 

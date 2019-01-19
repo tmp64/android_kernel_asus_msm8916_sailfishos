@@ -32,6 +32,17 @@
 #define LLCON_BPP           24
 #define LLCON_PXL_SIZE      3
 
+static uint32_t loglevel_colors[8] = {
+	0xF49CBF,		// LOGLEVEL_EMERG	Pink
+	0xFF0000,		// LOGLEVEL_ALERT	Full Red
+	0xFF0000,		// LOGLEVEL_CRIT	Full Red
+	0xF25B4B,		// LOGLEVEL_ERR		Red
+	0xFCE33F,		// LOGLEVEL_WARNING	Yellow
+	0x3F75FF,		// LOGLEVEL_NOTICE	Blue
+	0xE2E2E2,		// LOGLEVEL_INFO	Light gray
+	0xFFFFFF		// LOGLEVEL_DEBUG	White
+};
+
 volatile int llcon_enabled = 0;
 volatile int llcon_dumplog = 0;
 
@@ -119,7 +130,7 @@ static int __init llcon_setup(char *str)
 	if (llcon_set_font_type(font))
 		return 1;
 
-	llcon_set_font_fg_color(font_color ? font_color : LLCON_WHITE);
+	llcon_set_font_fg_color(font_color);
 
 	llcon.mode = mode;
 	return 1;
@@ -351,14 +362,23 @@ void llcon_emit(char c)
 	__llcon_emit(c);
 }
 
-void llcon_emit_line(char * line, int size)
+void llcon_emit_line(char * line, int size, int level)
 {
 	int i;
+	bool colorChanged = false;
+	if (llcon.fg_color == 0)
+	{
+		colorChanged = true;
+		level &= 7;	// Limit level to 0-7 using bitwise AND with 0b111
+		llcon.fg_color = loglevel_colors[level];
+	}
 	if (line && size > 0) {
 		for (i = 0; i < size; i++) {
 			__llcon_emit(line[i]);
 		}
 	}
+	if (colorChanged)
+		llcon.fg_color = 0;
 }
 
 void llcon_set_cursor_pos(size_t x, size_t y)
